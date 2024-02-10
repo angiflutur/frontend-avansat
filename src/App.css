@@ -1,0 +1,72 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Stilizare Popper */
+.datePickerPopper {
+  z-index: 1; /* Asigură-te că Popper-ul este deasupra tuturor celorlalte elemente */
+  border: 1px solid #cbd5e0; /* Adaugă un border */
+  borderRadius: 4px; /* Rotunjirea colțurilor */
+  boxShadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Umbra pentru efect de adâncime */
+}
+
+/* Stilizare date */
+.react-datepicker {
+  font-family: inherit; /* Utilizează fontul implicit */
+  border: none; /* Elimină orice border */
+  borderRadius: 4px; /* Rotunjirea colțurilor */
+}
+
+.react-datepicker__header {
+  background-color: #805ad5; /* Schimbă culoarea fundalului antetului */
+  color: #fff; /* Schimbă culoarea textului antetului */
+}
+
+.react-datepicker__day-name,
+.react-datepicker__day {
+  color: #4a5568; /* Schimbă culoarea zilelor */
+}
+
+.react-datepicker__day--selected {
+  background-color: #805ad5; /* Schimbă culoarea de fundal a zilelor selectate */
+  color: #fff; /* Schimbă culoarea textului pentru zilele selectate */
+}
+
+.react-datepicker__day--today {
+  font-weight: bold; /* Facem ziua de azi să fie bold */
+}
