@@ -17,15 +17,7 @@ const HomePage = () => {
           Switch theme
         </Button>
         <Text>Theme is: {theme}</Text>
-        <Input />
-        <Button
-          colorScheme="purple"
-          onClick={() => {
-            navigate("/product/1");
-          }}
-        >
-          Go to product 1
-        </Button>
+
       </VStack>
     </Center>
   );

@@ -24,20 +24,17 @@ import { auth } from "./lib/firebase";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route element={<ProtectedRoute redirectTo="/login" />}>
-          <Route element={<Navbar />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/counter" element={<CounterPage />} />
-            <Route element={<ProtectedRoute redirectTo="/" />}>
-              <Route path="/product/:id" element={<ProductPage />} />
-            </Route>
-            <Route path="*" element={<PageNotFound />} />
-            <Route path="/" element={<CounterPage />} />
-        <Route path="/task/:taskId" element={<TaskDetailsPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route element={<ProtectedRoute redirectTo="/login" />}>
+        <Route element={<Navbar />}>
+          <Route path="/" element={<CounterPage />} />
+          <Route path="/counter" element={<HomePage />} />
+          <Route element={<ProtectedRoute redirectTo="/" />}>
+            <Route path="/product/:id" element={<ProductPage />} />
+            <Route path="/task/:taskId" element={<TaskDetailsPage />} />
           </Route>
+          <Route path="*" element={<PageNotFound />} />
         </Route>
       </Route>
     </>

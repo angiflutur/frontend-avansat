@@ -18,22 +18,22 @@ const Navbar = () => {
               fontWeight="bold"
               fontSize="24"
             >
-              Home
+              ToDoList
             </Text>
           </Link>
         </Box>
 
-        <Box>
+        {/* <Box>
           <Link to="/counter">
             <Text
               color={counterMatch ? "purple.600" : "black"}
               fontWeight="bold"
               fontSize="24"
             >
-              ToDoList
+              Profile
             </Text>
           </Link>
-        </Box>
+        </Box> */}
 
         <IconButton
         icon={<FaSignOutAlt />}

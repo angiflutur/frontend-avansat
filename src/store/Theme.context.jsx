@@ -1,3 +1,4 @@
+// În Theme.context.jsx
 import { createContext, useContext, useState } from "react";
 
 export const ThemeContext = createContext({
@@ -5,29 +6,18 @@ export const ThemeContext = createContext({
   switchTheme: () => {},
 });
 
-export const ThemeProvider = (props) => {
+export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState("light");
 
   const switchTheme = () => {
-    if (theme === "light") {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        switchTheme,
-      }}
-    >
-      {props.children}
+    <ThemeContext.Provider value={{ theme, switchTheme }}>
+      {children}
     </ThemeContext.Provider>
   );
 };
 
-export const useTheme = () => {
-  return useContext(ThemeContext);
-};
+export const useTheme = () => useContext(ThemeContext);

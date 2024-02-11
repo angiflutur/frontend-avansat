@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   useColorModeValue,
-  useDisclosure,
   VStack,
   Modal,
   ModalOverlay,
@@ -16,11 +15,19 @@ import {
   Checkbox,
   Text,
   Badge,
+  Flex,
+  Icon,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  DeleteIcon,
+  TimeIcon,
+  CheckCircleIcon,
+} from "@chakra-ui/icons";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
-import TaskForm from "./TaskForm"; // Asigură-te că importul reflectă calea corectă
+import TaskForm from "./TaskForm"; // Ajustează calea dacă este necesar
 import { useNavigate } from "react-router-dom";
 
 const todoReducer = (state, action) => {
@@ -47,6 +54,8 @@ const ToDoList = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
+
+  const buttonColor = useColorModeValue("purple.400", "purple.200");
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -113,7 +122,12 @@ const ToDoList = () => {
     return deadline1 - deadline2;
   };
 
-  const sortedTasks = [...state].sort(compareDeadlines);
+  const sortedTasks = [...state].sort((task1, task2) => {
+    if (task1.completed !== task2.completed) {
+      return task1.completed ? 1 : -1;
+    }
+    return new Date(task1.deadline) - new Date(task2.deadline);
+  });
 
   return (
     <Box display="flex" justifyContent="center" mt={5}>
@@ -140,43 +154,67 @@ const ToDoList = () => {
             // onClick={() => handleTaskClick(task.id)} // Acest handler va fi declanșat doar dacă faci click pe Box, nu pe Checkbox
           >
             <HStack justifyContent="space-between">
-            <VStack align="flex-start" flex={1} onClick={() => navigate(`/task/${task.id}`)}>
-                <Text
-                  fontSize="lg"
-                  fontWeight="bold"
-                  textDecoration={task.completed ? "line-through" : "none"}
+              <Flex
+                align="center"
+                onClick={() => navigate(`/task/${task.id}`)}
+                cursor="pointer"
+              >
+                <Icon
+                  as={task.completed ? CheckCircleIcon : TimeIcon}
+                  color={buttonColor}
+                  mr={2}
+                />
+
+                <VStack
+                  align="flex-start"
+                  flex={1}
+                  onClick={() => navigate(`/task/${task.id}`)}
                 >
-                  {task.title}
-                </Text>
-                <Text fontSize="sm">{task.description}</Text>
-                <Badge
-                  colorScheme={
-                    isDeadlinePassed(task.deadline, task.completed)
-                      ? "red"
-                      : "blue"
-                  }
-                  p={1}
-                  borderRadius="lg"
-                >
-                  Deadline: {new Date(task.deadline).toLocaleDateString()}
-                </Badge>
-              </VStack>
-              <Checkbox
-                isChecked={task.completed}
-                onChange={(e) => toggleTaskCompletion(task.id, e)}
-                size="lg"
-                colorScheme="teal"
-              />
-              <IconButton
-                aria-label="Delete task"
-                icon={<DeleteIcon />}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeTask(task.id);
-                }}
-                colorScheme="red"
-                size="xs"
-              />
+                  <Text
+                    fontSize="lg"
+                    fontWeight="bold"
+                    textDecoration={task.completed ? "line-through" : "none"}
+                  >
+                    {task.title}
+                  </Text>
+                  {/* <Text fontSize="sm">{task.description}</Text> */}
+                  <Badge
+                    colorScheme={
+                      isDeadlinePassed(task.deadline, task.completed)
+                        ? "red"
+                        : "blue"
+                    }
+                    p={1}
+                    borderRadius="lg"
+                  >
+                    {isDeadlinePassed(task.deadline, task.completed)
+                      ? `!!Deadline passed and not completed: ${new Date(
+                          task.deadline
+                        ).toLocaleDateString()}`
+                      : `Deadline: ${new Date(
+                          task.deadline
+                        ).toLocaleDateString()}`}
+                  </Badge>
+                </VStack>
+              </Flex>
+              <HStack>
+                <Checkbox
+                  isChecked={task.completed}
+                  onChange={(e) => toggleTaskCompletion(task.id, e)}
+                  size="lg"
+                  colorScheme="teal"
+                />
+                <IconButton
+                  aria-label="Delete task"
+                  icon={<DeleteIcon />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeTask(task.id);
+                  }}
+                  colorScheme="red"
+                  size="sm"
+                />
+              </HStack>
             </HStack>
           </Box>
         ))}
