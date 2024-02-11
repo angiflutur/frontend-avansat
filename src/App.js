@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { logout, setIsAuthenticated } from "./store/auth.reducer";
 import RegisterPage from "./pages/RegisterPage";
+import TaskDetailsPage from './pages/TaskDetailsPage';
 
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./lib/firebase";
@@ -34,6 +35,8 @@ const router = createBrowserRouter(
               <Route path="/product/:id" element={<ProductPage />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
+            <Route path="/" element={<CounterPage />} />
+        <Route path="/task/:taskId" element={<TaskDetailsPage />} />
           </Route>
         </Route>
       </Route>

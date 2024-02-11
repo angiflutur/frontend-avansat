@@ -21,6 +21,7 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 import TaskForm from "./TaskForm"; // Asigură-te că importul reflectă calea corectă
+import { useNavigate } from "react-router-dom";
 
 const todoReducer = (state, action) => {
   switch (action.type) {
@@ -44,6 +45,7 @@ const todoReducer = (state, action) => {
 const ToDoList = () => {
   const [state, dispatch] = useReducer(todoReducer, []);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
 
   useEffect(() => {
@@ -63,18 +65,17 @@ const ToDoList = () => {
   }, []);
 
   useEffect(() => {
-    if (!isInitialLoadComplete) return;
-    const updateTasksInFirestore = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-      const userId = user.uid;
-      await setDoc(doc(db, "todoList", userId), {
-        tasks: state,
-      });
-    };
+    if (isInitialLoadComplete) {
+      const updateTasksInFirestore = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+        const userId = user.uid;
+        await setDoc(doc(db, "todoList", userId), { tasks: state });
+      };
 
-    updateTasksInFirestore();
-  }, [state]);
+      updateTasksInFirestore();
+    }
+  }, [state, isInitialLoadComplete]);
 
   const handleSaveTask = (task) => {
     dispatch({ type: "addTask", payload: task });
@@ -84,7 +85,8 @@ const ToDoList = () => {
     dispatch({ type: "removeTask", payload: id });
   };
 
-  const toggleTaskCompletion = (id) => {
+  const toggleTaskCompletion = (id, e) => {
+    e.stopPropagation();
     dispatch({ type: "toggleTask", payload: id });
   };
 
@@ -96,10 +98,15 @@ const ToDoList = () => {
 
     const deadlineDate = new Date(deadline);
     deadlineDate.setHours(0, 0, 0, 0);
+    const toggleTaskCompletion = (id) => {
+      dispatch({ type: "toggleTask", payload: id });
+    };
 
     return deadlineDate < today && !completed;
   };
-
+  const handleTaskClick = (taskId) => {
+    navigate(`/task/${taskId}`);
+  };
   const compareDeadlines = (task1, task2) => {
     const deadline1 = new Date(task1.deadline);
     const deadline2 = new Date(task2.deadline);
@@ -130,13 +137,14 @@ const ToDoList = () => {
             width="100%"
             transition="all 0.3s ease"
             _hover={{ boxShadow: "2xl" }}
+            // onClick={() => handleTaskClick(task.id)} // Acest handler va fi declanșat doar dacă faci click pe Box, nu pe Checkbox
           >
             <HStack justifyContent="space-between">
-              <VStack align="flex-start" flex={1}>
+            <VStack align="flex-start" flex={1} onClick={() => navigate(`/task/${task.id}`)}>
                 <Text
                   fontSize="lg"
                   fontWeight="bold"
-                  isStrikethrough={task.completed}
+                  textDecoration={task.completed ? "line-through" : "none"}
                 >
                   {task.title}
                 </Text>
@@ -153,20 +161,26 @@ const ToDoList = () => {
                   Deadline: {new Date(task.deadline).toLocaleDateString()}
                 </Badge>
               </VStack>
-              <CustomCheckbox
+              <Checkbox
                 isChecked={task.completed}
-                onChange={() => toggleTaskCompletion(task.id)}
+                onChange={(e) => toggleTaskCompletion(task.id, e)}
+                size="lg"
+                colorScheme="teal"
               />
               <IconButton
                 aria-label="Delete task"
                 icon={<DeleteIcon />}
-                onClick={() => removeTask(task.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeTask(task.id);
+                }}
                 colorScheme="red"
                 size="xs"
               />
             </HStack>
           </Box>
         ))}
+
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
@@ -179,25 +193,6 @@ const ToDoList = () => {
         </Modal>
       </VStack>
     </Box>
-  );
-};
-
-// Component custom pentru checkbox
-const CustomCheckbox = ({ isChecked, onChange }) => {
-  const color = useColorModeValue(
-    isChecked ? "teal.500" : "gray.300",
-    isChecked ? "teal.300" : "gray.300"
-  );
-
-  return (
-    <Checkbox
-      isChecked={isChecked}
-      onChange={onChange}
-      size="lg"
-      colorScheme="teal"
-      borderRadius="xl"
-      bg={color}
-    />
   );
 };
 

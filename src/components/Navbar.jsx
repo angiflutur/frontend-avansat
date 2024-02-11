@@ -1,8 +1,8 @@
 import { Link, Outlet, useMatch } from "react-router-dom";
-import { Box, HStack, Text } from "@chakra-ui/react";
-import { CloseIcon } from "@chakra-ui/icons";
+import { Box, HStack, Text, IconButton } from "@chakra-ui/react";
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
+import { FaSignOutAlt } from "react-icons/fa";
 
 const Navbar = () => {
   const homeMatch = useMatch("/");
@@ -30,23 +30,21 @@ const Navbar = () => {
               fontWeight="bold"
               fontSize="24"
             >
-              Counter
+              ToDoList
             </Text>
           </Link>
         </Box>
 
-        <CloseIcon
-          ml="auto"
-          mr="5"
-          w={6}
-          h={6}
-          _hover={{
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            signOut(auth);
-          }}
-        />
+        <IconButton
+        icon={<FaSignOutAlt />}
+        size="md"
+        variant="ghost"
+        color="purple"
+        ml="auto"
+        _hover={{ bg: "purple", color: "white" }} // Schimbă culoarea la hover
+        aria-label="Sign out"
+        onClick={() => signOut(auth)}
+      />
       </HStack>
 
       <Outlet />
